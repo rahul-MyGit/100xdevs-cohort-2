@@ -17,5 +17,40 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+app.get("/files",(req,res)=>{
+  fs.readdir(path.join(__dirname,"./files/"), (err,data)=>{
+    if(err){
+      res.status(500).json({
+        msg:"error comes in reading file and that is err 500"
+      })
+    } else{
+      res.send(data);
+    }
+  })
+})
+
+
+app.get("/files/:filename",(req,res) =>{
+  const filePath = path.join(__dirname,"/files/",req.params.filename);
+
+  console.log(filePath);
+  fs.readFile(filePath,"utf-8",(err,data)=>{
+    if(err){
+      res.status(404).json({
+        msg:"File name is wrongly entered, check file name again"
+      })
+    } else{
+      res.json(data);
+    }
+  })
+})
+
+app.all("*",(req,res)=>{
+  res.status(404).json({
+    msg:"worng URL"
+  })
+})
+app.listen(3000);
+
 
 module.exports = app;

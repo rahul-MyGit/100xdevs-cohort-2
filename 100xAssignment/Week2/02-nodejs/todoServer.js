@@ -45,5 +45,98 @@
   const app = express();
   
   app.use(bodyParser.json());
-  
+
+  let todos = [{
+    id: 1,
+    title: "Work Work",
+    desc: "Kam pr jana hai"
+  },{
+    id: 2,
+    title: "Work",
+    desc: "Kam"
+  }];
+
+
+
+  // ------------------------------------------- GET ---------------------------------
+  app.get("/todo",(req,res)=>{
+    res.json(todos);
+  })
+
+
+  app.get("/todo/:id",(req,res)=>{
+    const singleObj = todos.find((n) => n.id == parseInt(req.params.id))
+
+    if(!singleObj){
+      res.status(500).json({
+        msg:"Wrong ID has been Entered"
+      });
+    }else{
+      res.json(singleObj);
+    }
+  })
+
+  // ------------------------------------------POST-----------------------------------
+
+  app.post("/todo",(req,res) =>{
+    const newTodo = {
+      id : Math.floor(Math.random() * 1000000),
+      title: req.body.title,
+      desc: req.body.desc
+    }
+
+    todos.push(newTodo);
+    res.status(200).json({
+      msg: "Added successfully"
+    })
+  })
+
+  // -------------------------------------------PUT-------------------------------------
+
+  app.put("/todo/:id",(req,res) =>{
+    const idIndex = todos.findIndex(n => n.id == parseInt(req.params.id))
+
+    if(idIndex == -1){
+      res.status(404).json({
+        msg : "Wrong ID entered"
+      });
+    } else{
+
+      todos[idIndex].title = req.body.title,
+      todos[idIndex].desc = req.body.desc
+
+      res.status(200).json({
+        msg: "Updated successfully"
+      });
+    }
+  })
+
+  // ------------------------------------------Delete --------------------------------
+
+  app.delete("/todo/:id",(req,res) =>{
+    const idIndex = todos.findIndex(n => n.id == parseInt(req.body.id))
+
+    if(!idIndex){
+      res.status(404).json({
+        msg : "Wrong ID entered"
+      });
+    } else{
+
+      todos.splice(idIndex,1);
+      res.status(200).json({
+        msg: "Deleted successfully"
+      });
+    }
+  })
+  // -------------------------------------------Listen------------------------------
+  app.all("*",(req,res)=>{
+    res.status(404).json({
+      msg:"WRONG URL"
+    });
+  })
+
+  app.listen(3000, ()=>{
+    console.log("Server is running on", 3000);
+  })
+
   module.exports = app;
